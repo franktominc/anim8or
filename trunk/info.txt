@@ -1,0 +1,9 @@
+"AddonInfo"
+{
+	"name"			"Animator"
+	"version"		"1.0"
+	"up_date"		"now"
+	"author_name"		"Rambo_6"
+	"author_email"		""
+	"author_url"		"www.goatse.asia"
+}
