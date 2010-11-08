@@ -93,9 +93,15 @@ function ANIMATOR.Think()
 		
 							//d.Prop:SetBonePosition( i, pos, ang ) <<< THIS IS WRONG
 							//d.Prop:SetBoneMatrix( d.BonePositions[ key ][i] )
+							
+							if d.Prop:GetBoneMatrix( i ) then
+							
+								d.Prop.BoneTable[i] = d.BonePositions[i]
+								
+							end
 				
 						end
-			
+					
 					end
 					
 				end
@@ -130,6 +136,28 @@ end
 
 hook.Add( "Think", "ANIMATOR.Think", ANIMATOR.Think )
 
+function ANIMATOR.InitBoneFunc( ent )
+
+	if not ValidEntity( ent ) or ent:GetClass() != "prop_ragdoll" then return end
+
+	ent.BuildBonePositions = function( self, numbones, numphys )
+		
+		for i=0, numbones do
+		
+			if self:GetBoneMatrix( i ) and self.BoneTable and self.BoneTable[i] then
+			
+				self:SetBonePosition( i, unpack( self.BoneTable[i] ) )
+			
+			end
+		
+		end
+	
+	end
+	
+end
+
+hook.Add( "OnEntityCreated", "ANIMATOR.InitBoneFunc", ANIMATOR.InitBoneFunc )
+
 function TOGGLEANIM( sex )
 	
 	Entity(1).PlayingAnimation = sex
@@ -147,7 +175,7 @@ function ANIMTEST()
 end
 
 local meta = FindMetaTable( "Player" )
-if not meta then print("FASFSDFSDFS") return end 
+if not meta then return end 
 
 function meta:AddScene( tbl )
 
@@ -197,7 +225,6 @@ function meta:NewScene( ent )
 
 	local tbl = {}
 	tbl.BonePositions = {}
-	tbl.BoneAngles = {}
 	tbl.Positions = {}
 	tbl.Angles = {}
 	tbl.Durations = {}
@@ -207,6 +234,8 @@ function meta:NewScene( ent )
 	tbl.Type = ent:GetClass()
 	tbl.Model = ent:GetModel()
 	tbl.Prop = ent
+	
+	ent.BoneTable = {}
 	
 	tbl.Transition = function( start, movetime ) 
 
@@ -227,7 +256,7 @@ function meta:InsertKeyframe( ent )
 	if not k then 
 	
 		self:NewScene( ent )
-		k = self:SceneExists( ent ) // if this still manages to fuck up then idk what to say
+		k = self:SceneExists( ent )
 	
 	end
 	
@@ -239,15 +268,12 @@ function meta:InsertKeyframe( ent )
 		local num = #self.Scenes[k].BonePositions + 1
 	
 		self.Scenes[k].BonePositions[ num ] = {}
-		self.Scenes[k].BoneAngles[ num ] = {}
 		
 		for i=0, ent:GetBoneCount() do
 		
-			local pos, ang = ent:GetBonePosition( i )
-			local matrix = ent:GetBoneMatrix( i )
+			// local matrix = ent:GetBoneMatrix( i )
 		
-			self.Scenes[k].BonePositions[ num ][ i ] = matrix // idk what to do here
-			self.Scenes[k].BoneAngles[ num ][ i ] = ang
+			self.Scenes[k].BonePositions[ num ][ i ] = { ent:GetBonePosition( i ) }
 		
 		end
 		
