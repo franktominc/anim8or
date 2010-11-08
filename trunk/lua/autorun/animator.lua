@@ -96,7 +96,7 @@ function ANIMATOR.Think()
 							
 							if d.Prop:GetBoneMatrix( i ) then
 							
-								d.Prop.BoneTable[i] = d.BonePositions[i]
+								d.Prop.BoneTable[i] = d.BonePositions[ key ][i]
 								
 							end
 				
