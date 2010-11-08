@@ -271,9 +271,11 @@ function meta:InsertKeyframe( ent )
 		
 		for i=0, ent:GetBoneCount() do
 		
-			// local matrix = ent:GetBoneMatrix( i )
+			if ent:GetBoneMatrix( i ) then
 		
-			self.Scenes[k].BonePositions[ num ][ i ] = { ent:GetBonePosition( i ) }
+				self.Scenes[k].BonePositions[ num ][ i ] = { ent:GetBonePosition( i ) }
+				
+			end
 		
 		end
 		
